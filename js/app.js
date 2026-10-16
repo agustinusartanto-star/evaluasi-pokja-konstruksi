@@ -98,14 +98,14 @@ function paket(){
     <td class="noprint"><button class="btn s l" onclick="S.pk='${k.id}';go('paket')">Peserta</button>
     ${isA()?`<button class="btn s l" onclick="fPaket('${k.id}')">Ubah</button><button class="btn s r" onclick="hapus('Paket','${k.id}')">Hapus</button>`:''}</td></tr>`}).join('');
   const k=S.d.Paket.find(x=>x.id===S.pk);
-  const det=k?`<div class="card" style="margin-top:16px"><div class="top"><h3>Peserta: ${esc(k.nama)}</h3>${isA()?`<button class="btn s" onclick="fPes('${k.id}')">+ Peserta</button>`:''}</div>
+  const det=k?`<div class="card" style="margin-top:16px"><div class="top"><h3>Peserta: ${esc(k.nama)}</h3><button class="btn s" onclick="fPes('${k.id}')">+ Peserta</button></div>
   <div class="scroll"><table><tr><th>Peserta</th><th class="num">Penawaran</th><th class="num">Terkoreksi</th><th class="num">% HPS</th><th>Status</th><th></th></tr>
   ${pes(k.id).sort((a,b)=>a.terkoreksi-b.terkoreksi).map(p=>{const r=rasio(p,k),po=posisi(p);
    return `<tr><td>${esc(p.nama)}</td><td class="num">${rp(p.penawaran)}</td><td class="num">${rp(p.terkoreksi)}</td>
    <td class="num">${r.toFixed(1)}% ${r>100?badge('bad','&gt; HPS'):r<80?badge('warn','&lt; 80%'):''}</td><td>${badge(po.s,esc(po.x))}</td>
    <td class="noprint"><button class="btn s l" onclick="S.pk='${k.id}';S.ps='${p.id}';go('eval')">Evaluasi</button>
    ${isA()?`<button class="btn s l" onclick="fPes('${k.id}','${p.id}')">Ubah</button><button class="btn s r" onclick="hapus('Peserta','${p.id}')">Hapus</button>`:''}</td></tr>`}).join('')||'<tr><td colspan="6" class="mu">Belum ada peserta</td></tr>'}</table></div></div>`:'';
-  return `<div class="top"><h1>Daftar Paket Tender</h1>${isA()?'<button class="btn" onclick="fPaket()">+ Tambah Paket</button>':''}</div>
+  return `<div class="top"><h1>Daftar Paket Tender</h1><button class="btn" onclick="fPaket()">+ Tambah Paket</button></div>
   <input id="q" class="noprint" placeholder="Cari kode tender / nama paket / peserta..." oninput="cari(this.value)" style="margin-bottom:12px">
   <div class="card scroll"><table id="tb"><tr><th>Paket</th><th class="num">HPS</th><th class="num">Peserta</th><th>Tahapan saat ini</th><th></th></tr>${rows||'<tr><td colspan="5" class="mu">Belum ada paket</td></tr>'}</table></div>${det}`;
 }
@@ -138,9 +138,9 @@ function evalV(){
   const miss=p?I.filter(i=>{const e=ev(p.id,i.id);return !e||!e.hasil}).length:0;
   const tabs=TH.map((x,i)=>`<span class="tab ${i===S.th?'on':''}" style="--c:${x[1]};--b:${x[2]}" onclick="S.th=${i};go('eval')">${i}. ${x[0]}${p?' '+({ok:'✓',bad:'✕',warn:'!'}[st(p.id,i)]||''):''}</span>`).join('');
   const rows=p?I.map(i=>{const e=ev(p.id,i.id)||{},sy=S.d.Persyaratan.find(x=>x.id_paket===S.pk&&x.id_indikator===i.id);
-    const dis=isA()?'':'disabled';
+    const dis='';
     return `<tr id="r_${i.id}" class="${e.hasil?'':'miss'}"><td>${esc(i.nama)} ${+i.gugur?badge('part','menggugurkan'):''}</td>
-    <td><input class="s" value="${esc(sy?sy.syarat:'')}" ${dis} onchange="saveSy('${i.id}')" placeholder="${isA()?'isi syarat':'-'}"></td>
+    <td><input class="s" value="${esc(sy?sy.syarat:'')}" ${dis} onchange="saveSy('${i.id}')" placeholder="isi syarat"></td>
     <td><input class="t" value="${esc(e.tawaran)}" ${dis} placeholder="yang ditawarkan"></td>
     <td><select class="h" ${dis} onchange="saveEv('${i.id}')"><option value="">- pilih -</option>${Object.keys(HS).map(h=>`<option value="${h}" ${e.hasil===h?'selected':''}>${HS[h]}</option>`).join('')}</select></td>
     <td><input class="c" value="${esc(e.catatan)}" ${dis} placeholder="catatan"></td></tr>`}).join(''):'';
@@ -152,7 +152,7 @@ function evalV(){
   <div class="tabs">${tabs}</div>
   <div class="card scroll"><div class="top"><h3 style="color:${t[1]}">Tahap ${S.th} - ${t[0]}</h3>${miss?badge('bad',miss+' indikator belum terisi'):badge('ok','Tahap lengkap')}</div>
   <table><tr><th>Indikator</th><th>Disyaratkan</th><th>Ditawarkan</th><th>Hasil (wajib)</th><th>Catatan</th></tr>${rows}</table>
-  ${isA()?'<p class="mu noprint">Pilih Hasil untuk menyimpan baris; Tawaran dan Catatan ikut tersimpan.</p>':''}</div>
+  <p class="mu noprint">Pilih Hasil untuk menyimpan baris; Tawaran dan Catatan ikut tersimpan.</p></div>
   <div class="card noprint" style="margin-top:16px"><h3>Berkas peserta</h3>
   ${bk.map(b=>`<div><a href="${esc(b.url)}" target="_blank">${esc(b.nama)}</a> <span class="mu">${esc(b.jenis)}</span></div>`).join('')||'<p class="mu">Belum ada berkas.</p>'}
   ${isA()?`<div class="grid g3"><select id="bj"><option>Dokumen Penawaran</option><option>Bukti Pendukung</option><option>Berita Acara Klarifikasi</option></select><input id="bf" type="file"><button class="btn" onclick="unggah()">Unggah</button></div>`:''}</div>`
@@ -214,7 +214,7 @@ function klar(){
   const rows=S.d.Klarifikasi.map(c=>{const p=S.d.Peserta.find(x=>x.id===c.id_peserta);
     return `<tr><td>${esc(c.tanggal)}</td><td>${esc(p?p.nama:'-')}</td><td>Tahap ${esc(c.tahap)}</td><td>${esc(c.hal)}</td><td>${esc(c.hasil)}</td>
     <td class="noprint">${isA()?`<button class="btn s r" onclick="hapus('Klarifikasi','${c.id}')">Hapus</button>`:''}</td></tr>`}).join('');
-  return `<div class="top"><h1>Catatan Klarifikasi</h1>${isA()?'<button class="btn" onclick="fKlar()">+ Klarifikasi</button>':''}</div>
+  return `<div class="top"><h1>Catatan Klarifikasi</h1><button class="btn" onclick="fKlar()">+ Klarifikasi</button></div>
   <div class="card scroll"><table><tr><th>Tanggal</th><th>Peserta</th><th>Tahap</th><th>Hal yang diklarifikasi</th><th>Hasil</th><th></th></tr>${rows||'<tr><td colspan="6" class="mu">Belum ada catatan</td></tr>'}</table></div>`;
 }
 function fKlar(){
